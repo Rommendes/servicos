@@ -48,11 +48,11 @@ const Home = () => {
   //
 
   return (
-    <div className="w-full relative bg-no-repeat h-screen bg-cover overflow-hidden z-0 rounded-xl md:h-screen xl:h-screen lg:h-screen"
+    <div className="w-full relative bg-no-repeat h-screen bg-cover overflow-hidden z-0 rounded-xl md:h-screen xl:h-screen lg:h-screen" 
         
         style={{backgroundImage: `url(${bgImage})`}}>
     
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 max-w-[90%]">
         {/* Header de Navegação */}
         <header className="bg-roxo text-white py-4 px-6 flex justify-between items-center rounded-lg">
         <h1 className="text-xl font-bold">Painel de Clientes</h1>

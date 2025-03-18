@@ -4,6 +4,7 @@ import {  useNavigate } from "react-router-dom";
 import EnderecoForm from "../Componentes/EnderecoForm";
 import bgImage from "../assets/salao.png"
 import BotaoSair from "../Componentes/BotaoSair";
+import servicos from "../data/servicos.json";
 
 const CadastroCliente = () => {
   const navigate =  useNavigate();
@@ -12,6 +13,7 @@ const CadastroCliente = () => {
     nome: "",
     telefone: "",
     endereco: {},
+    servico:"" // Adicionando o serviço selecionado
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,6 +78,7 @@ const CadastroCliente = () => {
       dataAniversario: "",
       telefone: "",
       endereco: {},
+      servico: ""
     });
   };
    
@@ -152,7 +155,24 @@ const CadastroCliente = () => {
           className="w-full p-2 border rounded"
           required
         />
-     
+
+          {/* Dropdown para selecionar o serviço */}
+          <label className="block mt-2">Serviço:</label>
+            <select
+              name="servico"
+              value={cliente.servico}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">Selecione um serviço</option>
+              {servicos.map((servico) => (
+                <option key={servico.id} value={servico.nome}>
+                  {servico.nome} - R$ {servico.preco.toFixed(2)}
+                </option>
+              ))}
+            </select>
+
         <EnderecoForm onChange={handleEnderecoChange}/>
        
         </form>
@@ -165,21 +185,19 @@ const CadastroCliente = () => {
        
 
           {/* Botão para visualizar a lista de clientes */}
-      <button
-        onClick={() => navigate("/lista-clientes")}
-        className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
-        Ver Lista de Clientes
-      </button>
-      <button
-        onClick={() => navigate("/home")}
-        className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
-        Home
-      </button>
-        <BotaoSair />
-      </div>
-      </div>
-     
-     
+          <button
+            onClick={() => navigate("/lista-clientes")}
+            className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+            Ver Lista de Clientes
+          </button>
+          <button
+            onClick={() => navigate("/home")}
+            className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+            Home
+          </button>
+            <BotaoSair />
+          </div>
+        </div>
       </div>
     </div>
   );

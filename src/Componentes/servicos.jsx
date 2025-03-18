@@ -39,7 +39,7 @@ const Servicos = ({ listaServicos }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center text-gray-500 p-4">
+                <td colSpan="5" className="text-center text-roxo ">
                   Nenhum serviço cadastrado ainda.
                 </td>
               </tr>
