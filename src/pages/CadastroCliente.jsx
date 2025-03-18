@@ -1,0 +1,188 @@
+import { useState, useEffect } from "react";
+import { supabase } from "../supabaseClient";
+import {  useNavigate } from "react-router-dom";
+import EnderecoForm from "../Componentes/EnderecoForm";
+import bgImage from "../assets/salao.png"
+import BotaoSair from "../Componentes/BotaoSair";
+
+const CadastroCliente = () => {
+  const navigate =  useNavigate();
+  const [clientes, setClientes] = useState([]);
+  const [cliente, setCliente] = useState({
+    nome: "",
+    telefone: "",
+    endereco: {},
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCliente((prevCliente)=>({
+      ...prevCliente,
+      [name]:value,
+    }));
+  };
+  const handleEnderecoChange = (novoEndereco) => {
+    setCliente((prevCliente)=> ({
+      ...prevCliente,
+      endereco: novoEndereco
+    }));
+  };
+
+
+
+
+ // 🔹 Buscar clientes do Supabase ao carregar a página
+  useEffect(()=>{
+    const fetchClientes = async ()=>{
+        const { data, error } = await supabase.from("clientes").select("*");
+        if(error) {
+            console.error("Erro ao buscar clientes: ", error);
+        } else {
+            setClientes(data);
+        }
+    }
+    fetchClientes();
+  }, []);
+
+  // 🔹 Função para cadastrar o cliente no Supabase
+  const handleCadastro = async (e) => {
+    e.preventDefault();
+
+  
+    //Validação para evitar cadastros vazios.
+    if (!cliente.nome || !cliente.dataAniversario || !cliente.telefone || !cliente.endereco) {
+      alert("Por favor, preencha todos os campos.");//feedback
+      return;
+    }
+
+
+    const { data, error } = await supabase
+    .from("clientes")
+    .insert([cliente])
+    .select("*")// 🔹 Isso já retorna os dados inseridos
+
+   if(error){
+    console.error("Erro ao cadastrar cliente: ", error);
+    return;
+    //alert("Erro ao cadastrar cliente!");//feedback
+
+   } 
+   if(data && Array.isArray(data)){
+    setClientes([...clientes, ...data]);// 🔹 Atualiza lista apenas se data for um array
+   }
+
+     // 🔹 Limpa os campos do formulário
+     setCliente({
+      nome: "",
+      dataAniversario: "",
+      telefone: "",
+      endereco: {},
+    });
+  };
+   
+
+  
+
+
+  //formatar telefone como (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+  
+  const formatarTelefone = (value) => {
+    // Remove tudo que não for número
+    value = value.replace(/\D/g, "");
+  
+    // Formata como (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+    if (value.length > 10) {
+      return value.replace(/^(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    } else if (value.length > 6) {
+      return value.replace(/^(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+    } else if (value.length > 2) {
+      return value.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+    } else {
+      return value;
+    }
+  };
+  const handleTelefoneChange = (e) => {
+    const telefoneFormatado = formatarTelefone(e.target.value);
+    setCliente({...cliente, telefone: telefoneFormatado})
+  };
+
+  
+  return (
+    <div className="w-full relative bg-no-repeat bg-cover overflow-hidden z-0 rounded-xl"
+        style={{backgroundImage: `url(${bgImage})`}}>
+    <div className="flex items-center justify-center min-h-screen ">
+      
+      <div className= "bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl border border-gray-500">
+   
+      <h2 className="text-2xl text-center font-bold mb-4 text-cinza">Cadastro de Cliente</h2>
+      
+      <form onSubmit={handleCadastro} className="space-y-2">
+      <label className="block mt-2">Nome:</label>
+        
+        <input
+       
+          type="text"
+          name="nome"
+          placeholder="Nome"
+          value={cliente.nome}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <label className="block mt-2">Data de aniversário:</label>
+        <input
+       
+          type="date"
+          placeholder="Data de Aniversário"
+          name="dataAniversario"
+          min={"01/01/2007"}
+          max={"0101/2050"}
+          value={cliente.dataAniversario}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <label className="block mt-2">Telefone:</label>
+        <input
+        
+          type="tel"              
+          value={cliente.telefone}
+          onChange={handleTelefoneChange}
+          placeholder="(XX) XXXXX-XXXX"
+          maxLength={15} // Limita o tamanho máximo
+          className="w-full p-2 border rounded"
+          required
+        />
+     
+        <EnderecoForm onChange={handleEnderecoChange}/>
+       
+        </form>
+
+        <div className="flex gap-4 mt-4 justify-center">
+        <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+          Adicionar Cliente
+        </button>
+    
+       
+
+          {/* Botão para visualizar a lista de clientes */}
+      <button
+        onClick={() => navigate("/lista-clientes")}
+        className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+        Ver Lista de Clientes
+      </button>
+      <button
+        onClick={() => navigate("/home")}
+        className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+        Home
+      </button>
+        <BotaoSair />
+      </div>
+      </div>
+     
+     
+      </div>
+    </div>
+  );
+};
+
+export default CadastroCliente;
